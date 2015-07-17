@@ -7,7 +7,7 @@ Setup a Hystrix (https://github.com/Netflix/Hystrix) event stream with jetty for
 Leiningen
 
 ```clj
-["ring-jetty-hystrix-adapter" "0.1.0"]
+[ring-jetty-hystrix-adapter "0.1.0"]
 ```
 
 Run a jetty server:
