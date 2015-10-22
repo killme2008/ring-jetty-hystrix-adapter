@@ -17,7 +17,6 @@
            [org.eclipse.jetty.util.ssl SslContextFactory]
            [org.eclipse.jetty.util.log Log]
            [java.lang.management ManagementFactory]
-           [javax.servlet.http HttpServletRequest HttpServletResponse]
            [org.eclipse.jetty.servlet ServletContextHandler ServletHolder]
            [com.netflix.hystrix.contrib.metrics.eventstream HystrixMetricsStreamServlet])
   (:require [ring.util.servlet :as servlet]))
@@ -48,7 +47,7 @@
   (let [http-factory (HttpConnectionFactory. (http-config options))
         connector (server-connector server http-factory)]
     (when (options :statistic? false)
-        (.addBean connector (ConnectorStatistics.)))
+      (.addBean connector (ConnectorStatistics.)))
     (doto connector
       (.setPort (options :port 80))
       (.setHost (options :host))
@@ -128,28 +127,28 @@
   :client-auth    - SSL client certificate authenticate, may be set to :need,
                     :want or :none (defaults to :none)"
   [app options]
-  (let [^Server s (create-server options)
-        ^QueuedThreadPool p (QueuedThreadPool. ^Integer (options :max-threads 50))]
-    (when (:daemon? options false)
-      (.setDaemon p true))
+  (let [^Server s (create-server options)]
     (when-let [configurator (:configurator options)]
       (configurator s))
     (let [hystrix-holder  (ServletHolder. HystrixMetricsStreamServlet)
           hystrix-context (ServletContextHandler. ServletContextHandler/SESSIONS)
           app-context (ContextHandler.)
           contexts (ContextHandlerCollection.)]
-      (.addServlet hystrix-context hystrix-holder (:hystrix-servlet-path options "/hystrix.stream"))
+      (doto hystrix-context
+        (.addServlet  hystrix-holder "/")
+        (.setContextPath (:hystrix-servlet-path options "/hystrix")))
       (doto app-context
         (.setContextPath "/")
-        (.setHandler (if (options :statistic? false)
-                       (proxy-handler app)
-                       (doto (StatisticsHandler.)
-                         (.setHandler (proxy-handler app))))))
+        (.setHandler
+         (if (options :statistic? false)
+           (do
+             (ConnectorStatistics/addToAllConnectors s)
+             (doto (StatisticsHandler.)
+               (.setHandler (proxy-handler app))))
+           (proxy-handler app))))
       (.setHandlers contexts
                     (into-array Handler [hystrix-context app-context]))
-      (doto s
-        (.setThreadPool p)
-        (.setHandler contexts)))
+      (.setHandler s contexts))
     (.start s)
     (when (:join? options true)
       (.join s))
