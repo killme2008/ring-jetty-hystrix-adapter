@@ -103,6 +103,17 @@
       (.addConnector server (ssl-connector server options)))
     server))
 
+(defn- ^StatisticsHandler create-statistic-handler
+  [^Server s app]
+  (let [^MBeanContainer mbc (MBeanContainer. (ManagementFactory/getPlatformMBeanServer))]
+    (doto s
+      (.addEventListener mbc)
+      (.addBean mbc)
+      (.addBean (Log/getLog)))
+    (ConnectorStatistics/addToAllConnectors s)
+    (doto (StatisticsHandler.)
+      (.setHandler (proxy-handler app)))))
+
 (defn run-jetty-with-hystrix
   "Start a Jetty webserver to serve the given handler according to the
   supplied options:
@@ -141,14 +152,7 @@
         (.setContextPath "/")
         (.setHandler
          (if (options :stats false)
-           (let [^MBeanContainer mbc (MBeanContainer. (ManagementFactory/getPlatformMBeanServer))]
-             (doto s
-               (.addEventListener mbc)
-               (.addBean mbc)
-               (.addBean (Log/getLog)))
-             (ConnectorStatistics/addToAllConnectors s)
-             (doto (StatisticsHandler.)
-               (.setHandler (proxy-handler app))))
+           (create-statistic-handler s app)
            (proxy-handler app))))
       (.setHandlers contexts
                     (into-array Handler [hystrix-context app-context]))
