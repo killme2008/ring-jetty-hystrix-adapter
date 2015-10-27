@@ -118,7 +118,7 @@
   "Start a Jetty webserver to serve the given handler according to the
   supplied options:
 
-  :stats          - Whether to add a jetty statistics handler.
+  :stats?         - Whether to add a jetty statistics handler.
   :hystrix-servlet-path - hystrix event stream serlvet path, default is /hystrix.stream
   :configurator   - a function called with the Jetty Server instance
   :port           - the port to listen on (defaults to 80)
@@ -151,7 +151,7 @@
       (doto app-context
         (.setContextPath "/")
         (.setHandler
-         (if (options :stats false)
+         (if (options :stats? false)
            (create-statistic-handler s app)
            (proxy-handler app))))
       (.setHandlers contexts
