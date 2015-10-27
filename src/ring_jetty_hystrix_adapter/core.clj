@@ -47,7 +47,7 @@
 (defn- ^ServerConnector http-connector [server options]
   (let [http-factory (HttpConnectionFactory. (http-config options))
         connector (server-connector server http-factory)]
-    (when (options :stats false)
+    (when (options :stats? false)
       (.addBean connector (ConnectorStatistics.)))
     (doto connector
       (.setPort (options :port 80))
@@ -118,7 +118,7 @@
   "Start a Jetty webserver to serve the given handler according to the
   supplied options:
 
-  :stats     - add the statistic
+  :stats          - Whether to add a jetty statistics handler.
   :hystrix-servlet-path - hystrix event stream serlvet path, default is /hystrix.stream
   :configurator   - a function called with the Jetty Server instance
   :port           - the port to listen on (defaults to 80)

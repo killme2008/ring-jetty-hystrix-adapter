@@ -1,4 +1,4 @@
-(defproject ring-jetty-hystrix-adapter "0.1.1"
+(defproject ring-jetty-hystrix-adapter "0.2.0-beta"
   :description "Setup a Hystrix (https://github.com/Netflix/Hystrix) event stream with jetty for clojure."
   :url "http://github.com/killme2008/ring-jetty-hystrix-adapter"
   :license {:name "Eclipse Public License"

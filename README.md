@@ -24,6 +24,16 @@ Run a jetty server:
 Just like [ring-jetty-adpater]() but has a new option `hystrix-servlet-path` to
 export hystrix event stream. Also see [hystrix-event-stream-clj](https://github.com/josephwilk/hystrix-event-stream-clj).
 
+Add [jetty statistics handler](http://www.eclipse.org/jetty/documentation/current/statistics-handler.html) to JMX MBean:
+
+```clj
+(jetty/run-jetty-with-hystrix {:port 3000
+                               :max-threads 10
+                               :hystrix-servlet-path "/hystrix.stream"
+                               :stats? true
+                               :join? false})
+```
+
 ## License
 
 Copyright © 2015 killme2008
