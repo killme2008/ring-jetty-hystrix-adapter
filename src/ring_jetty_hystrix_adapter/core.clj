@@ -16,6 +16,7 @@
            [org.eclipse.jetty.util.thread ThreadPool QueuedThreadPool]
            [org.eclipse.jetty.util.ssl SslContextFactory]
            [org.eclipse.jetty.util.log Log]
+           [org.eclipse.jetty.jmx MBeanContainer]
            [java.lang.management ManagementFactory]
            [org.eclipse.jetty.servlet ServletContextHandler ServletHolder]
            [com.netflix.hystrix.contrib.metrics.eventstream HystrixMetricsStreamServlet])
@@ -102,7 +103,6 @@
       (.addConnector server (ssl-connector server options)))
     server))
 
-
 (defn run-jetty-with-hystrix
   "Start a Jetty webserver to serve the given handler according to the
   supplied options:
@@ -141,7 +141,11 @@
         (.setContextPath "/")
         (.setHandler
          (if (options :stats false)
-           (do
+           (let [^MBeanContainer mbc (MBeanContainer. (ManagementFactory/getPlatformMBeanServer))]
+             (doto s
+               (.addEventListener mbc)
+               (.addBean mbc)
+               (.addBean (Log/getLog)))
              (ConnectorStatistics/addToAllConnectors s)
              (doto (StatisticsHandler.)
                (.setHandler (proxy-handler app))))
