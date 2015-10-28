@@ -1,13 +1,13 @@
 # ring-jetty-hystrix-adapter
 
-Setup a Hystrix (https://github.com/Netflix/Hystrix) event stream with jetty for clojure.
+Setup a Hystrix (https://github.com/Netflix/Hystrix) event stream with jetty 9 for clojure.
 
 ## Usage
 
 Leiningen
 
 ```clj
-[ring-jetty-hystrix-adapter "0.2.0-beta3"]
+[ring-jetty-hystrix-adapter "0.2.0-RC1"]
 ```
 
 Run a jetty server:
@@ -21,16 +21,17 @@ Run a jetty server:
                                :join? false})
 ```
 
-Just like [ring-jetty-adpater]() but has a new option `hystrix-servlet-path` to
+Just like [ring-jetty-adpater](https://github.com/ring-clojure/ring/tree/master/ring-jetty-adapter) but has a new option `hystrix-servlet-path` to
 export hystrix event stream. Also see [hystrix-event-stream-clj](https://github.com/josephwilk/hystrix-event-stream-clj).
 
-Add [jetty statistics handler](http://www.eclipse.org/jetty/documentation/current/statistics-handler.html) to JMX MBean:
+Also, we add two new options `connector-stats?` and `handler-stats?` to choose wheather to enable jetty [jetty statistics handler](http://www.eclipse.org/jetty/documentation/current/statistics-handler.html):
 
 ```clj
 (jetty/run-jetty-with-hystrix {:port 3000
                                :max-threads 10
                                :hystrix-servlet-path "/hystrix.stream"
-                               :stats? true
+                               :connector-stats? true
+                               :handler-stats? true
                                :join? false})
 ```
 

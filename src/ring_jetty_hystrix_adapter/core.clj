@@ -47,7 +47,7 @@
 (defn- ^ServerConnector http-connector [server options]
   (let [http-factory (HttpConnectionFactory. (http-config options))
         connector (server-connector server http-factory)]
-    (when (options :stats? false)
+    (when (options :connector-stats? false)
       (.addBean connector (ConnectorStatistics.)))
     (doto connector
       (.setPort (options :port 80))
@@ -118,25 +118,34 @@
   "Start a Jetty webserver to serve the given handler according to the
   supplied options:
 
-  :stats?         - Whether to add a jetty statistics handler.
+  :connector-stats?     - Whether to add a jetty connector statistics.
+  :handler-stats?       - Whether to add a jetty request handler statistics.
   :hystrix-servlet-path - hystrix event stream serlvet path, default is /hystrix.stream
-  :configurator   - a function called with the Jetty Server instance
-  :port           - the port to listen on (defaults to 80)
-  :host           - the hostname to listen on
-  :join?          - blocks the thread until server ends (defaults to true)
-  :daemon?        - use daemon threads (defaults to false)
-  :ssl?           - allow connections over HTTPS
-  :ssl-port       - the SSL port to listen on (defaults to 443, implies :ssl?)
-  :keystore       - the keystore to use for SSL connections
-  :key-password   - the password to the keystore
-  :truststore     - a truststore to use for SSL connections
-  :trust-password - the password to the truststore
-  :max-threads    - the maximum number of threads to use (default 50)
-  :min-threads    - the minimum number of threads to use (default 8)
-  :max-queued     - the maximum number of requests to queue (default unbounded)
-  :max-idle-time  - the maximum idle time in milliseconds for a connection (default 200000)
-  :client-auth    - SSL client certificate authenticate, may be set to :need,
-                    :want or :none (defaults to :none)"
+  :configurator         - a function called with the Jetty Server instance
+  :port                 - the port to listen on (defaults to 80)
+  :host                 - the hostname to listen on
+  :join?                - blocks the thread until server ends (defaults to true)
+  :daemon?              - use daemon threads (defaults to false)
+  :http?                - listen on :port for HTTP traffic (defaults to true)
+  :ssl?                 - allow connections over HTTPS
+  :ssl-port             - the SSL port to listen on (defaults to 443, implies
+                          :ssl? is true)
+  :keystore             - the keystore to use for SSL connections
+  :key-password         - the password to the keystore
+  :truststore           - a truststore to use for SSL connections
+  :trust-password       - the password to the truststore
+  :max-threads          - the maximum number of threads to use (default 50)
+  :min-threads          - the minimum number of threads to use (default 8)
+  :max-idle-time        - the maximum idle time in milliseconds for a connection
+                          (default 200000)
+  :client-auth          - SSL client certificate authenticate, may be set to
+                          :need,:want or :none (defaults to :none)
+  :send-date-header?    - add a date header to the response (default true)
+  :output-buffer-size   - the response body buffer size (default 32768)
+  :request-header-size  - the maximum size of a request header (default 8192)
+  :response-header-size - the maximum size of a response header (default 8192)
+  :send-server-version? - add Server header to HTTP response (default true)
+  "
   [app options]
   (let [^Server s (create-server options)]
     (when-let [configurator (:configurator options)]
@@ -151,7 +160,7 @@
       (doto app-context
         (.setContextPath "/")
         (.setHandler
-         (if (options :stats? false)
+         (if (options :handler-stats? false)
            (create-statistic-handler s app)
            (proxy-handler app))))
       (.setHandlers contexts
