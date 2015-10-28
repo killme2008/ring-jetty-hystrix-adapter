@@ -147,7 +147,7 @@
           contexts (ContextHandlerCollection.)]
       (doto hystrix-context
         (.addServlet  hystrix-holder "/")
-        (.setContextPath (:hystrix-servlet-path options "/hystrix")))
+        (.setContextPath (:hystrix-servlet-path options "/hystrix.stream")))
       (doto app-context
         (.setContextPath "/")
         (.setHandler
