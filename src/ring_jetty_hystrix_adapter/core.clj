@@ -82,8 +82,11 @@
                         (.addCustomizer (SecureRequestCustomizer.))))
         ssl-factory  (SslConnectionFactory.
                       (ssl-context-factory options)
-                      "http/1.1")]
-    (doto (server-connector server ssl-factory http-factory)
+                      "http/1.1")
+        sc (server-connector server ssl-factory http-factory)]
+    (when-let [aqs (options :accept-queue-size)]
+      (.setAcceptQueueSize sc aqs))
+    (doto sc
       (.setPort ssl-port)
       (.setHost (options :host))
       (.setIdleTimeout (options :max-idle-time 200000)))))
@@ -124,6 +127,7 @@
   :configurator         - a function called with the Jetty Server instance
   :port                 - the port to listen on (defaults to 80)
   :host                 - the hostname to listen on
+  :accept-queue-size    - The size of the pending connection backlog.
   :join?                - blocks the thread until server ends (defaults to true)
   :daemon?              - use daemon threads (defaults to false)
   :http?                - listen on :port for HTTP traffic (defaults to true)

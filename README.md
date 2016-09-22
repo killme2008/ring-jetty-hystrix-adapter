@@ -7,7 +7,7 @@ Setup a Hystrix (https://github.com/Netflix/Hystrix) event stream with jetty 9 f
 Leiningen
 
 ```clj
-[ring-jetty-hystrix-adapter "0.2.0-RC1"]
+[ring-jetty-hystrix-adapter "0.2.1"]
 ```
 
 Run a jetty server:
@@ -22,9 +22,15 @@ Run a jetty server:
 ```
 
 Just like [ring-jetty-adpater](https://github.com/ring-clojure/ring/tree/master/ring-jetty-adapter) but has a new option `hystrix-servlet-path` to
-export hystrix event stream. Also see [hystrix-event-stream-clj](https://github.com/josephwilk/hystrix-event-stream-clj).
+export hystrix event stream. Please see [hystrix-event-stream-clj](https://github.com/josephwilk/hystrix-event-stream-clj).
 
-Also, we add two new options `connector-stats?` and `handler-stats?` to choose wheather to enable jetty [jetty statistics handler](http://www.eclipse.org/jetty/documentation/current/statistics-handler.html):
+And we add some new options:
+
+```
+:connector-stats?     - Whether to add a jetty connector statistics.
+:handler-stats?       - Whether to add a jetty request handler statistics.
+:accept-queue-size    - The size of the pending connection backlog.
+```
 
 ```clj
 (jetty/run-jetty-with-hystrix {:port 3000
