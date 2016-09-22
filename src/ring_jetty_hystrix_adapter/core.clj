@@ -49,6 +49,8 @@
         connector (server-connector server http-factory)]
     (when (options :connector-stats? false)
       (.addBean connector (ConnectorStatistics.)))
+    (when-let [aqs (options :accept-queue-size)]
+      (.setAcceptQueueSize connector aqs))
     (doto connector
       (.setPort (options :port 80))
       (.setHost (options :host))
