@@ -33,7 +33,7 @@
           (servlet/update-servlet-response response response-map)
           (.setHandled base-request true))))))
 
-(defn- ^ServerConnector server-connector [server & factories]
+(defn- ^ServerConnector server-connector [^Server server & factories]
   (ServerConnector. server (into-array ConnectionFactory factories)))
 
 (defn- ^HttpConfiguration http-config [options]
@@ -44,7 +44,7 @@
     (.setResponseHeaderSize (:response-header-size options 8192))
     (.setSendServerVersion (:send-server-version? options true))))
 
-(defn- ^ServerConnector http-connector [server options]
+(defn- ^ServerConnector http-connector [^Server server options]
   (let [http-factory (HttpConnectionFactory. (http-config options))
         connector (server-connector server http-factory)]
     (when (options :connector-stats? false)
