@@ -10,4 +10,6 @@
                  [org.eclipse.jetty/jetty-jmx "9.2.10.v20150310"]
                  [hystrix-event-stream-clj "0.1.3"
                   :exclusions [com.netflix.hystrix/hystrix-clj]]
-                 [com.netflix.hystrix/hystrix-clj "1.4.11"]])
+                 [com.netflix.hystrix/hystrix-clj "1.4.11"
+                  :exclusions [potemkin]]
+                 [potemkin "0.4.5"]])
