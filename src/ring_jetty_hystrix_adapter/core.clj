@@ -11,7 +11,7 @@
             SecureRequestCustomizer
             ConnectorStatistics]
            [org.eclipse.jetty.server.handler
-            AbstractHandler StatisticsHandler
+            AbstractHandler
             ContextHandlerCollection ContextHandler]
            [org.eclipse.jetty.util.thread ThreadPool QueuedThreadPool]
            [org.eclipse.jetty.util.ssl SslContextFactory]
@@ -19,6 +19,7 @@
            [org.eclipse.jetty.jmx MBeanContainer]
            [java.lang.management ManagementFactory]
            [org.eclipse.jetty.servlet ServletContextHandler ServletHolder]
+           [cn.leancloud.jetty.handler StatisticsHandler]
            [com.netflix.hystrix.contrib.metrics.eventstream HystrixMetricsStreamServlet])
   (:require [ring.util.servlet :as servlet]))
 
